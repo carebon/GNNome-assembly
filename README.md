@@ -92,6 +92,95 @@ python example.py
 
 将pytorch移动到 cuda的时候也出了点问题，一直找不到设备，最后发现作者传参的 CUDA：3  可怜我只有一块u  最后改成了 CUDA：0 解决  完美运行
 
+
+输出的部分结果
+```
+===> VALIDATION (all validation graphs): Epoch = 99
+Loss: 0.1020, fp_rate(GT=0): 0.2905, fn_rate(GT=1): 0.0458
+elapsed time: 0h 0m 1s
+
+Epoch 00100: reducing learning rate of group 0 to 2.6352e-04.
+DGL graph idx=0 info:
+ Graph(num_nodes=31608, num_edges=235100,
+      ndata_schemes={'read_trim_end': Scheme(shape=(), dtype=torch.int64), 'read_end': Scheme(shape=(), dtype=torch.int64), 'read_start': Scheme(shape=(), dtype=torch.int64), 'read_trim_start': Scheme(shape=(), dtype=torch.int64), 'read_idx': Scheme(shape=(), dtype=torch.int64), 'read_strand': Scheme(shape=(), dtype=torch.int64), 'read_length': Scheme(shape=(), dtype=torch.int64), 'x': Scheme(shape=(1,), dtype=torch.float32), 'in_deg': Scheme(shape=(), dtype=torch.float32), 'out_deg': Scheme(shape=(), dtype=torch.float32), 'pe': Scheme(shape=(16,), dtype=torch.float32)}
+      edata_schemes={'y': Scheme(shape=(), dtype=torch.float32), 'overlap_length': Scheme(shape=(), dtype=torch.int64), 'overlap_similarity': Scheme(shape=(), dtype=torch.float32), 'prefix_length': Scheme(shape=(), dtype=torch.int64), 'e': Scheme(shape=(2,), dtype=torch.float32)})
+elapsed time (loading network and data): 0h 0m 0s
+==== Processing graph 0 : chr21 ====
+tensor([ 4.6707,  4.0494,  4.4748,  ..., -5.0943, -3.7267, -1.3268])
+tensor([1., 1., 1.,  ..., 0., 0., 1.])
+elapsed time (get_scores): 0h 0m 6s
+1: 222198 , 0:12902
+==== METRICS for graph 0 : chr21 ====
+acc=0.9403 precision=0.9515 recall=0.9848 f1=0.9679
+fp_rate=0.2523 fn_rate=0.0485
+
+elapsed time (get_candidates): 0h 0m 0s
+
+idx_contig: 0, nb_processed_nodes: 0, nb_remaining_nodes: 31608, nb_original_nodes: 31608
+elapsed time (get_candidates): 0h 0m 1s
+elapsed time (get_visited): 0h 0m 0s
+Chosen walk with index: 0 ; Length: 2822
+[2822]
+elapsed time (get_candidates): 0h 0m 0s
+
+idx_contig: 1, nb_processed_nodes: 21948, nb_remaining_nodes: 9660, nb_original_nodes: 31608
+elapsed time (get_candidates): 0h 0m 0s
+elapsed time (get_visited): 0h 0m 0s
+Chosen walk with index: 7 ; Length: 384
+[2822, 384]
+elapsed time (get_candidates): 0h 0m 0s
+
+idx_contig: 2, nb_processed_nodes: 24676, nb_remaining_nodes: 6932, nb_original_nodes: 31608
+elapsed time (get_candidates): 0h 0m 0s
+elapsed time (get_visited): 0h 0m 0s
+Chosen walk with index: 27 ; Length: 430
+[2822, 384, 430]
+elapsed time (get_candidates): 0h 0m 0s
+
+idx_contig: 3, nb_processed_nodes: 27044, nb_remaining_nodes: 4564, nb_original_nodes: 31608
+elapsed time (get_candidates): 0h 0m 0s
+elapsed time (get_visited): 0h 0m 0s
+Chosen walk with index: 4 ; Length: 368
+[2822, 384, 430, 368]
+elapsed time (get_candidates): 0h 0m 0s
+
+idx_contig: 4, nb_processed_nodes: 28972, nb_remaining_nodes: 2636, nb_original_nodes: 31608
+elapsed time (get_candidates): 0h 0m 0s
+elapsed time (get_visited): 0h 0m 0s
+Chosen walk with index: 1 ; Length: 272
+[2822, 384, 430, 368, 272]
+elapsed time (get_candidates): 0h 0m 0s
+
+idx_contig: 5, nb_processed_nodes: 30554, nb_remaining_nodes: 1054, nb_original_nodes: 31608
+elapsed time (get_candidates): 0h 0m 0s
+elapsed time (get_visited): 0h 0m 0s
+Chosen walk with index: 0 ; Length: 118
+[2822, 384, 430, 368, 272, 118]
+elapsed time (get_candidates): 0h 0m 0s
+
+idx_contig: 6, nb_processed_nodes: 31176, nb_remaining_nodes: 432, nb_original_nodes: 31608
+elapsed time (get_candidates): 0h 0m 0s
+elapsed time (get_visited): 0h 0m 0s
+Chosen walk with index: 0 ; Length: 29
+[2822, 384, 430, 368, 272, 118, 29]
+elapsed time (get_candidates): 0h 0m 0s
+
+idx_contig: 7, nb_processed_nodes: 31336, nb_remaining_nodes: 272, nb_original_nodes: 31608
+elapsed time (get_candidates): 0h 0m 0s
+elapsed time (get_visited): 0h 0m 0s
+Chosen walk with index: 1 ; Length: 8
+elapsed time (get_walks): 0h 0m 4s
+elapsed time (get_contigs): 0h 0m 0s
+elapsed time (total): 0h 0m 11s
+--------------------------------------------------------------------------------
+Report for graph 0 in /home/bio-3090ti/Benz_code/GNNome-assembly/data/experiments/test_example
+Graph created from chr21
+Num contigs:	7
+Longest contig:	29564535
+Reconstructed:	94.922674%
+N50:	29564535
+NG50:	29564535
+```
 This will also download the CHM13 reference and set up the directory structure for simulating reads, constructing graphs and running experiments. Default location is in the `data` directory of the root directory of this project.
 
 Apart from setting up the working directory, running the above example will simulate four read datasets for chromosome 19 and one read dataset for chromosome 21 and construct graphs from those reads. Subsequently, it will train a model on three chromosome 19 graphs, validate it on one chromosome 19 graph, and, finally, create assembly for chromosome 21. After reconstruction, the assembly sequences can be found in `data/experiments/test_example/assembly/0_assembly.fasta`.
