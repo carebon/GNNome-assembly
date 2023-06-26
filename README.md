@@ -1,5 +1,6 @@
 # GNNome Assembly
-
+中文/Chinese from Ben Cao
+非常漂亮的工作！
 This repository contains the code for the following paper:
 
 Lovro Vrček, Xavier Bresson, Thomas Laurent, Martin Schmitz, Mile Šikić. [Learning to Untangle Genome Assembly with Graph Convolutional Networks](https://arxiv.org/abs/2206.00668), arXiv preprint arXiv:2206.00668, 2022.
@@ -42,13 +43,52 @@ For example, for CUDA 11.1, this could be:
 pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
 pip install dgl-cu111 dglgo -f https://data.dgl.ai/wheels/repo.html
 ```
-
+一直到这 都没有问题，环境配置完成
 ## Quick start
-
+## 这个Quick start稍微有点不那么Quick  当然因为数据集巨大 也很正常
 To run a quick example, run:
 ```bash
 python example.py
 ```
+首先在 Download.sh 中
+```
+# Download chunks of the zip file
+#FILE=genomic_dataset_chunk.z01
+#echo -e "\nDownloading $FILE (size is 10GB)..."
+#curl https://www.dropbox.com/s/fa14gza4cf9dsk3/genomic_dataset_chunk.z01?dl=1 -o genomic_dataset_chunk.z01 -J -L -k
+#FILE=genomic_dataset_chunk.z02
+#echo -e "\nDownloading $FILE (size is 10GB)..."
+#curl https://www.dropbox.com/s/i8pftsjmbpkj1a0/genomic_dataset_chunk.z02?dl=1 -o genomic_dataset_chunk.z02 -J -L -k
+#FILE=genomic_dataset_chunk.z03
+#echo -e "\nDownloading $FILE (size is 10GB)..."
+#curl https://www.dropbox.com/s/udlqbypizummctq/genomic_dataset_chunk.z03?dl=1 -o genomic_dataset_chunk.z03 -J -L -k
+#FILE=genomic_dataset_chunk.z04
+#echo -e "\nDownloading $FILE (size is 10GB)..."
+#curl https://www.dropbox.com/s/2qzbswupfg90tbq/genomic_dataset_chunk.z04?dl=1 -o genomic_dataset_chunk.z04 -J -L -k
+#FILE=genomic_dataset_chunk
+#echo -e "\nDownloading $FILE (size is 3GB)..."
+#curl https://www.dropbox.com/s/0suo9k6fhtdg4p3/genomic_dataset_chunk.zip?dl=1 -o genomic_dataset_chunk.zip -J -L -k
+```
+这些数据集在网络情况不佳时，特别是特殊情况下推荐手动下载，然后再进行合并解压
+目录已经在原始代码中创建的很完善
+`pipeline.simulate_reads`主要是seqrequester进行reads的模拟，所以需要对seqrequester进行下载和安装，涉及到Makefile文件的操作，seqrequester作者Makefile写的很严谨所以门槛稍微高点，我也和作者进行了一系列的问答，最终才安装成功，详细的QA如下： https://github.com/marbl/seqrequester/issues/6
+`pipeline.generate_graphs`主要是通过Raven进行组装图的生成，Raven的安装比较顺利，如果不能完成自动化，可以按照项目中的Make进行手动
+cmake记得都用su的权限
+```
+utility/src/system/time-v1.H: In member function ‘merylutil::system::v1::muTime& merylutil::system::v1::muTime::getTime(uint32)’:
+utility/src/system/time-v1.H:86:5: error: ‘gettimeofday’ was not declared in this scope
+   86 |     gettimeofday(&tp, nullptr);
+      |     ^~~~~~~~~~~~
+make: *** [Makefile:387：/home/bio-3090ti/Benz_code/GNNome-assembly/vendor/seqrequester/build/obj/lib/libseqrequester.a/utility/src/align/align-ksw2-driver.o] 错误 1
+```
+这个错误是因为没有包含 <sys/time.h> 头文件，我在`align-ksw2-driver.C`和`time-v1.H`都加了#include <sys/time.h> 然后就很顺利的安装了
+
+并且切记在
+```bash
+python example.py
+```
+的时候一定要用su权限运行，否则无论是模拟reads还是组装图都会没有写入权限。
+
 This will also download the CHM13 reference and set up the directory structure for simulating reads, constructing graphs and running experiments. Default location is in the `data` directory of the root directory of this project.
 
 Apart from setting up the working directory, running the above example will simulate four read datasets for chromosome 19 and one read dataset for chromosome 21 and construct graphs from those reads. Subsequently, it will train a model on three chromosome 19 graphs, validate it on one chromosome 19 graph, and, finally, create assembly for chromosome 21. After reconstruction, the assembly sequences can be found in `data/experiments/test_example/assembly/0_assembly.fasta`.
