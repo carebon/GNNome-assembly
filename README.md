@@ -1,6 +1,7 @@
 # GNNome Assembly
 中文/Chinese from Ben Cao
 非常漂亮的工作！
+
 This repository contains the code for the following paper:
 
 Lovro Vrček, Xavier Bresson, Thomas Laurent, Martin Schmitz, Mile Šikić. [Learning to Untangle Genome Assembly with Graph Convolutional Networks](https://arxiv.org/abs/2206.00668), arXiv preprint arXiv:2206.00668, 2022.
@@ -88,6 +89,8 @@ make: *** [Makefile:387：/home/bio-3090ti/Benz_code/GNNome-assembly/vendor/seqr
 python example.py
 ```
 的时候一定要用su权限运行，否则无论是模拟reads还是组装图都会没有写入权限。
+
+将pytorch移动到 cuda的时候也出了点问题，一直找不到设备，最后发现作者传参的 CUDA：3  可怜我只有一块u  最后改成了 CUDA：0 解决  完美运行
 
 This will also download the CHM13 reference and set up the directory structure for simulating reads, constructing graphs and running experiments. Default location is in the `data` directory of the root directory of this project.
 
